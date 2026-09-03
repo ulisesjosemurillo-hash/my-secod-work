@@ -1,0 +1,17 @@
+--- app/src/main/java/com/example/DataExtractor.kt
++++ app/src/main/java/com/example/DataExtractor.kt
+@@ -37,13 +37,12 @@
+     fun extractPerjudicado(text: String): String {
+         val cleanText = text.replace(Regex("\\s+"), " ")
+         val regexes = listOf(
+-            Regex("(?i)en perjuicio de(?:l| la)?\\s+([A-ZÑÁÉÍÓÚ ]+?)\\s*(?:\\.|,|\\n|y)"),
+-            Regex("(?i)en perjuicio del Estado\\b")
++            Regex("(?i)en perjuicio de(?:l| la)?\\s+([A-ZÑÁÉÍÓÚ ]+?)\\s*(?:\\.|,|\\n|y\\b)")
+         )
+         for (regex in regexes) {
+             val match = regex.find(cleanText)
+             if (match != null) {
+-                if (match.value.lowercase().contains("estado")) return "EL ESTADO DE HONDURAS"
+                 return match.groupValues[1].trim()
+             }
+         }
