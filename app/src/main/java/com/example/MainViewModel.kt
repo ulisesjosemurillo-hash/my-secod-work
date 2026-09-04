@@ -170,14 +170,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (data.tipoAudienciaReprogramada.isBlank() || data.tipoAudienciaReprogramada == "NO IDENTIFICADO") faltantes.add("Tipo de Audiencia")
         if (data.nuevaFecha.isBlank()) faltantes.add("Nueva Fecha")
         if (data.nuevaHora.isBlank()) faltantes.add("Nueva Hora")
-        if (data.nombreJuez.isBlank() || data.nombreJuez == "NO IDENTIFICADO") faltantes.add("Juez")
-        if (data.nombreSecretario.isBlank() || data.nombreSecretario == "NO IDENTIFICADO") faltantes.add("Secretario")
+        
+        if (data.nombreJuez.isBlank() || data.nombreJuez == "NO IDENTIFICADO") {
+            _errorMessage.value = "SELECCIONE UN JUEZ"
+            return
+        }
+        if (data.nombreSecretario.isBlank() || data.nombreSecretario == "NO IDENTIFICADO") {
+            _errorMessage.value = "SELECCIONE UN SECRETARIO"
+            return
+        }
 
         if (faltantes.isNotEmpty()) {
             _errorMessage.value = "Faltan campos obligatorios para generar un acta completa: ${faltantes.joinToString(", ")}"
+            return
         } else {
             _errorMessage.value = null
         }
+
         
         val text = DocumentGenerator.generate(data, _isConstancia.value)
         _documentText.value = text

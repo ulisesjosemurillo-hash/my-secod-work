@@ -438,8 +438,18 @@ fun MobileAppScreen(viewModel: MainViewModel) {
                     }
 
                     VoiceTextField("ARTÍCULO CPP", uiState.articuloCpp, { viewModel.updateData(uiState.copy(articuloCpp = it)) }, "articulo")
-                    VoiceTextField("NOMBRE DEL JUEZ", uiState.nombreJuez, { viewModel.updateData(uiState.copy(nombreJuez = it)) }, "juez")
-                    VoiceTextField("NOMBRE DEL SECRETARIO", uiState.nombreSecretario, { viewModel.updateData(uiState.copy(nombreSecretario = it)) }, "secretario")
+                    SelectionGroup(
+                        title = "JUEZ",
+                        options = listOf("JACOBO MURILLO", "JENNY PENMAN", "OSMAN FAJARDO", "ADELA LAGOS"),
+                        selectedOption = uiState.nombreJuez,
+                        onOptionSelected = { viewModel.updateData(uiState.copy(nombreJuez = it)) }
+                    )
+                    SelectionGroup(
+                        title = "SECRETARIO",
+                        options = listOf("IVAN RENDON", "GERSON RODEZNO", "YORDI", "IRIS"),
+                        selectedOption = uiState.nombreSecretario,
+                        onOptionSelected = { viewModel.updateData(uiState.copy(nombreSecretario = it)) }
+                    )
 
                     Button(
                         onClick = { viewModel.generateDocument() },
@@ -673,3 +683,51 @@ fun CalendarView(onDateSelected: (LocalDate) -> Unit) {
         }
     }
 }
+
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+fun SelectionGroup(
+    title: String,
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            OutlinedTextField(
+                value = selectedOption.ifEmpty { "Seleccionar..." },
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor()
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                options.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option) },
+                        onClick = {
+                            onOptionSelected(option)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
